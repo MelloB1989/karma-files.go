@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 type ResponseHTTP struct {
@@ -17,6 +20,7 @@ type CreateUserRequest struct {
 
 func UploadSingleFile(c *fiber.Ctx) error {
 	form, err := c.MultipartForm()
+	fid, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm1234567890", 20);
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ResponseHTTP{
 			Success: false,
@@ -35,7 +39,9 @@ func UploadSingleFile(c *fiber.Ctx) error {
 	}
 
 	file := files[0]
-	if err := c.SaveFile(file, "./uploads/"+file.Filename); err != nil {
+	parts := strings.Split(file.Filename, ".")
+	extension := parts[len(parts)-1]
+	if err := c.SaveFile(file, "./uploads/"+fid+"."+extension); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ResponseHTTP{
 			Success: false,
 			Data:    nil,
