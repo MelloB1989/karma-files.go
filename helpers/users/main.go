@@ -36,17 +36,16 @@ func GetUsers() ([]database.Users, error) {
 	return users, nil
 }
 
-func CreateUser(oid string, userid string, password string, date string, api_token string, sites string) {
+func CreateUser(userid string, password string, date string, api_token string) {
 	db, err := database.DBConn()
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	//Generate a uid
-	id, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm1234567890_-", 10)
-	uid := oid + "---" + id
+	uid, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm1234567890_-", 10)
 
-	r, err := db.Exec(`INSERT INTO users (id, userid, password, date, api_token, sites) VALUES ($1, $2, $3, $4, $5, $6)`, uid, userid, password, date, api_token, sites)
+	r, err := db.Exec(`INSERT INTO users (id, userid, password, date, api_token) VALUES ($1, $2, $3, $4, $5)`, uid, userid, password, date, api_token)
 
 	if err != nil || r == nil {
 		log.Fatalln(err)
