@@ -4,6 +4,7 @@ go 1.22.2
 
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/aws/aws-sdk-go v1.55.3 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.30.3 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.27.26 // indirect
@@ -24,6 +25,7 @@ require (
 	github.com/aws/smithy-go v1.20.3 // indirect
 	github.com/gofiber/fiber/v2 v2.52.5 // indirect
 	github.com/google/uuid v1.5.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/matoous/go-nanoid/v2 v2.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
