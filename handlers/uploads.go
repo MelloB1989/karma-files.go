@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"strings"
 	"context"
 	"fmt"
+	kf_config "karma_files_go/config"
+	"strings"
+
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gofiber/fiber/v2"
 	gonanoid "github.com/matoous/go-nanoid/v2"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/config"
-	kf_config "karma_files_go/config"
 
 	awsutil "karma_files_go/aws"
 )
@@ -19,9 +20,9 @@ type ResponseHTTP struct {
 	Message string      `json:"message"`
 }
 
-type CreateUserRequest struct {
-	Name	 string `json:"name" form:"name"`
-	File	 *fiber.Ctx `json:"file" form:"file"`
+type CreateFileUserRequest struct {
+	Name string     `json:"name" form:"name"`
+	File *fiber.Ctx `json:"file" form:"file"`
 }
 
 func UploadSingleFile(c *fiber.Ctx) error {
@@ -35,7 +36,7 @@ func UploadSingleFile(c *fiber.Ctx) error {
 		S3Client: s3Client,
 	}
 	form, err := c.MultipartForm()
-	fid, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm1234567890", 20);
+	fid, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm1234567890", 20)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ResponseHTTP{
 			Success: false,
