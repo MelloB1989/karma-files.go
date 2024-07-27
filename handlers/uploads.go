@@ -2,12 +2,15 @@ package handlers
 
 import (
 	"strings"
-
+	"context"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go-v2/config"
+	kf_config "karma_files_go/config"
+
+	awsutil "karma_files_go/aws"
 )
 
 type ResponseHTTP struct {
@@ -22,7 +25,15 @@ type CreateUserRequest struct {
 }
 
 func UploadSingleFile(c *fiber.Ctx) error {
-	s3 := s3.NewFromConfig()
+	sdkConfig, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		fmt.Println("Couldn't load default configuration. Have you set up your AWS account?")
+		fmt.Println(err)
+	}
+	s3Client := s3.NewFromConfig(sdkConfig)
+	basics := awsutil.Bucket{
+		S3Client: s3Client,
+	}
 	form, err := c.MultipartForm()
 	fid, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm1234567890", 20);
 	if err != nil {
@@ -45,9 +56,14 @@ func UploadSingleFile(c *fiber.Ctx) error {
 	file := files[0]
 	parts := strings.Split(file.Filename, ".")
 	extension := parts[len(parts)-1]
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-west-2")},
-	)
+	fileKey := fid + "." + extension
+	if err := basics.UploadFile(kf_config.NewConfig().BuckerName, fileKey, fileKey); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(ResponseHTTP{
+			Success: false,
+			Data:    nil,
+			Message: err.Error(),
+		})
+	}
 	// if err := c.SaveFile(file, "./uploads/"+fid+"."+extension); err != nil {
 	// 	return c.Status(fiber.StatusInternalServerError).JSON(ResponseHTTP{
 	// 		Success: false,
