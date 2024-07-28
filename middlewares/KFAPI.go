@@ -9,7 +9,7 @@ import (
 	"karma_files_go/utils"
 )
 
-func KPAPI(c *fiber.Ctx) error {
+func KFAPI(c *fiber.Ctx) error {
 	authHeader := c.GetReqHeaders()
 	// Check if the header exists and has at least one value
 	if values, exists := authHeader["Authorization"]; exists && len(values) > 0 {
@@ -21,8 +21,8 @@ func KPAPI(c *fiber.Ctx) error {
 			if err != nil {
 				fmt.Println("Error decoding token:", err)
 			}
-			c.Locals("email", decoded["email"])
-			c.Locals("uid", decoded["uid"])
+			c.Locals("api_token", decoded["api_token"])
+			c.Locals("uid", decoded["userid"])
 			return c.Next()
 		} else {
 			fmt.Println("Invalid Authorization header format")
