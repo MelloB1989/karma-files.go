@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	handlers "karma_files_go/handlers"
+	"karma_files_go/middlewares"
 )
 
 func SetupRoutes() *fiber.App {
@@ -12,7 +13,8 @@ func SetupRoutes() *fiber.App {
 
 	// files
 	files := v1.Group("/files")
-	files.Post("/upload", handlers.UploadSingleFile)
+	files.Post("/upload", middlewares.KFAPI, handlers.UploadSingleFile)
+	files.Post("/uploadMultiple", handlers.UploadMultipleFiles)
 
 	// users
 	users := v1.Group("/users")
@@ -21,4 +23,3 @@ func SetupRoutes() *fiber.App {
 
 	return app
 }
-

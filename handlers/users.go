@@ -3,9 +3,11 @@ package handlers
 import (
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	gonanoid "github.com/matoous/go-nanoid/v2"
 
+	"karma_files_go/config"
 	user "karma_files_go/helpers/users"
 )
 
@@ -47,10 +49,24 @@ func CreateUser(c *fiber.Ctx) error {
 	rando, _ := gonanoid.Generate("qwertyuiopasdfghjklzxcvbnm", 10)
 	api_token := req.Userid + "---" + rando
 
+	key := config.NewConfig().JWTSecret
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userid":    req.Userid,
+		"api_token": api_token,
+	})
+	s, err := t.SignedString([]byte(key))
+	if err != nil {
+		return c.JSON(ResponseHTTP{
+			Success: false,
+			Message: "Failed to sign token.",
+			Data:    nil,
+		})
+	}
+
 	user.CreateUser(req.Userid, req.Password, date, api_token)
 	return c.JSON(ResponseHTTP{
 		Success: true,
 		Message: "Successfully created user.",
-		Data:    nil,
+		Data:    s,
 	})
 }
